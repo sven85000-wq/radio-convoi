@@ -3,42 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Radio Convoi Pro V40.41</title>
+    <title>Radio Convoi Pro V40.46</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --info: #38bdf8; }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-        #lock-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .container { padding: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; min-height: 100vh; box-sizing: border-box; }
-        .card { background: var(--card); padding: 20px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; z-index: 10; position: relative; }
-        input, select { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
-        .btn-main { background: var(--accent); color: #000; padding: 16px; width: 100%; font-weight: bold; border-radius: 12px; border:none; font-size: 1.1rem; cursor: pointer; }
-        #mini-radio { display: none; position: fixed; bottom: 85px; right: 30px; width: 70px; height: 70px; background: var(--danger); border-radius: 50%; z-index: 1000; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); align-items: center; justify-content: center; font-size: 1.8rem; border: 3px solid white; color: white; cursor: pointer; }
-        #ptt-btn { width: 110px; height: 110px; border-radius: 50%; background: #334155; border: 8px solid #475569; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; cursor: pointer; }
-        #ptt-btn:active, #mini-radio:active { background: #b91c1c; transform: scale(0.92); border-color: #fff; }
-        .archive-section { background: #020617; border-radius: 15px; padding: 12px; height: 200px; overflow-y: auto; text-align: left; font-size: 0.85rem; border: 1px solid #1e293b; }
-        .help-msg { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--info); color: var(--info); padding: 10px; border-radius: 10px; margin-bottom: 10px; font-style: italic; line-height: 1.3; }
-        .status-bar { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--accent); margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 12px; border: 1px solid #334155; }
-        .folder-link { cursor: pointer; text-decoration: underline; }
+        :root { --bg: #020617; --card: #1e293b; --accent: #fbbf24; --danger: #ef4444; --text: #f1f5f9; }
+       
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* LE BOÎTIER : Taille fixe pour rester "petit" partout */
+        .app-shell {
+            background: var(--card);
+            width: 330px;
+            height: 620px;
+            border-radius: 40px;
+            border: 3px solid #334155;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            display: flex; flex-direction: column;
+            padding: 20px; box-sizing: border-box;
+            position: relative;
+        }
+
+        #lock-screen {
+            position: absolute; inset: 0; background: #000; border-radius: 35px;
+            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; box-sizing: border-box; }
+        .btn-main { background: var(--accent); color: #000; padding: 15px; width: 100%; font-weight: bold; border-radius: 12px; border:none; cursor: pointer; }
+       
+        .status-bar { display: flex; justify-content: space-between; font-size: 12px; color: var(--accent); margin-bottom: 10px; padding: 5px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+       
+        #ptt-btn {
+            width: 95px; height: 95px; border-radius: 50%; background: #334155;
+            border: 6px solid #475569; margin: 10px auto;
+            display: flex; align-items: center; justify-content: center; font-size: 32px;
+            cursor: pointer; transition: 0.2s;
+        }
+        #ptt-btn:active { background: var(--danger); transform: scale(0.9); border-color: white; }
+
+        .history {
+            flex-grow: 1; background: #020617; border-radius: 20px;
+            margin: 10px 0; padding: 12px; overflow-y: auto; font-size: 13px; text-align: left;
+            border: 1px solid #1e293b;
+        }
+        .help { color: #38bdf8; font-size: 11px; font-style: italic; border: 1px dashed #38bdf8; padding: 8px; border-radius: 10px; margin-bottom: 10px; line-height: 1.3; }
     </style>
 </head>
 <body>
 
-<div id="lock-screen">
-    <h2 style="color:var(--accent)">🔒 ACCÈS RÉSERVÉ</h2>
-    <input type="password" id="master-code" placeholder="Code d'accès" style="max-width: 250px; text-align: center;">
-    <button class="btn-main" onclick="checkCode()">ENTRER</button>
-</div>
+<div class="app-shell">
+    <div id="lock-screen">
+        <h3 style="color:var(--accent)">ACCÈS RÉSERVÉ</h3>
+        <input type="password" id="master-code" placeholder="Code" style="width: 130px; text-align: center;">
+        <button class="btn-main" onclick="checkCode()" style="width: 130px; margin-top:10px;">VALIDER</button>
+    </div>
 
-<div id="mini-radio" onmousedown="startMic()" onmouseup="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">🎙️</div>
-
-<div class="container" id="app-content" style="display:none">
-    <div id="setup" class="card">
-        <h3 id="txt-welcome">👋 BIENVENUE</h3>
+    <div id="setup-ui" style="display: flex; flex-direction: column; height: 100%; justify-content: center;">
+        <h2 style="text-align: center; color: var(--accent); margin-top: 0;">RADIO PRO</h2>
         <input type="text" id="user-name" placeholder="VOTRE PRÉNOM">
         <input type="text" id="convoi-id" placeholder="ID DU CONVOI">
-       
-        <select id="my-lang" onchange="translateInterface()">
+        <select id="my-lang">
             <option value="sq-AL">🇦🇱 Albanais</option>
             <option value="de-DE">🇩🇪 Allemand</option>
             <option value="en-GB">🇬🇧 Anglais</option>
@@ -87,95 +116,64 @@
             <option value="tr-TR">🇹🇷 Turc</option>
             <option value="va-VA">🇻🇦 Vaticanais</option>
         </select>
-       
-        <button class="btn-main" id="btn-join" onclick="joinRadio()">DÉMARRER LA RADIO</button>
+        <button class="btn-main" onclick="startApp()">DÉMARRER LA RADIO</button>
     </div>
 
-    <div id="radio-ui" class="card" style="display:none">
+    <div id="radio-ui" style="display: none; flex-direction: column; height: 100%;">
         <div class="status-bar">
-            <span id="display-name" style="font-weight: bold;"></span>
-            <span id="display-code" class="folder-link" onclick="openFolderInfo()"></span>
+            <b id="label-name"></b>
+            <span id="label-convoi" style="text-decoration: underline; cursor: pointer;" onclick="alert('Dossier Convoi Actif')"></span>
         </div>
+       
         <div id="ptt-btn" onmousedown="startMic()" onmouseup="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">🎙️</div>
-        <div class="archive-section" id="history">
-            <div class="help-msg" id="txt-help">Appuyez sur le bouton micro : vos paroles seront transcrites et traduites automatiquement dans la langue de la personne qui reçoit.</div>
+       
+        <div class="history" id="chat-box">
+            <div class="help">Maintenez le micro pour parler. Votre voix sera traduite automatiquement chez vos collègues.</div>
         </div>
-        <button id="btn-quit" onclick="location.reload()" style="background:none; color:#64748b; font-size:0.7rem; margin-top:10px; border:none; text-decoration:underline; cursor:pointer;">Quitter</button>
+
+        <button onclick="location.reload()" style="background:none; color:#64748b; border:none; font-size:11px; cursor:pointer; margin-top: 5px;">✖ Quitter la session</button>
     </div>
 </div>
 
 <script>
-    const CODE_ADMIN = "2109", CODE_USER = "1234";
-    let isAdmin = false, peer, conn, recognition;
-
-    const TEXT_BASE_FR = {
-        'txt-welcome': "👋 BIENVENUE",
-        'btn-join': "DÉMARRER LA RADIO",
-        'user-name': "VOTRE PRÉNOM",
-        'convoi-id': "ID DU CONVOI",
-        'btn-quit': "Quitter",
-        'txt-help': "Appuyez sur le bouton micro : vos paroles seront transcrites et traduites automatiquement dans la langue de la personne qui reçoit."
-    };
-
-    function openFolderInfo() {
-        const folder = document.getElementById('display-code').innerText;
-        alert("📁 Dossier : " + folder + "\nCliquez sur 'Quitter' pour changer de dossier.");
-    }
-
-    async function translateInterface() {
-        const langCode = document.getElementById('my-lang').value.split('-')[0];
-        const elements = [
-            { id: 'txt-welcome', key: 'txt-welcome' },
-            { id: 'btn-join', key: 'btn-join' },
-            { id: 'user-name', key: 'user-name', prop: 'placeholder' },
-            { id: 'convoi-id', key: 'convoi-id', prop: 'placeholder' },
-            { id: 'btn-quit', key: 'btn-quit' },
-            { id: 'txt-help', key: 'txt-help' }
-        ];
-        for(let item of elements) {
-            const el = document.getElementById(item.id);
-            if(el) {
-                let finalTxt = (langCode === "fr") ? TEXT_BASE_FR[item.key] : await translate(TEXT_BASE_FR[item.key], "fr", langCode);
-                if(item.prop === 'placeholder') el.placeholder = finalTxt; else el.innerText = finalTxt;
-            }
-        }
-    }
+    const CODE_A = "2109", CODE_B = "1234";
+    let peer, conn, recognition;
 
     function checkCode() {
         const val = document.getElementById('master-code').value;
-        if(val === CODE_ADMIN || val === CODE_USER) {
-            isAdmin = (val === CODE_ADMIN);
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'flex';
-        } else alert("Code incorrect.");
+        if(val === CODE_A || val === CODE_B) document.getElementById('lock-screen').style.display = 'none';
+        else alert("Code erroné");
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.continuous = false; }
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRec) { recognition = new SpeechRec(); recognition.continuous = false; }
 
-    function joinRadio() {
-        const name = document.getElementById('user-name').value.trim() || "Chauffeur";
-        const code = document.getElementById('convoi-id').value.toUpperCase().trim();
-        if(!code) return alert("ID requis");
+    function startApp() {
+        const name = document.getElementById('user-name').value || "Chauffeur";
+        const code = document.getElementById('convoi-id').value.toUpperCase() || "CONVOI";
         peer = new Peer(code + "_" + Math.random().toString(36).substr(2, 4));
         peer.on('open', () => {
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('radio-ui').style.display = 'block';
-            document.getElementById('mini-radio').style.display = 'flex';
-            document.getElementById('display-name').innerText = (isAdmin ? "👑 " : "👤 ") + name;
-            document.getElementById('display-code').innerText = "📂 " + code;
-            setupEvents(peer.connect(code));
+            document.getElementById('setup-ui').style.display = 'none';
+            document.getElementById('radio-ui').style.display = 'flex';
+            document.getElementById('label-name').innerText = "👤 " + name;
+            document.getElementById('label-convoi').innerText = "📂 " + code;
+            setupConn(peer.connect(code));
         });
-        peer.on('connection', (c) => setupEvents(c));
+        peer.on('connection', (c) => setupConn(c));
     }
 
-    function setupEvents(c) {
+    function setupConn(c) {
         conn = c;
         conn.on('data', async (data) => {
-            const lang = document.getElementById('my-lang').value;
-            const translated = await translate(data.text, data.lang, lang.split('-')[0]);
-            addMsg(data.user, translated);
-            speak(translated, lang);
+            const lang = document.getElementById('my-lang').value.split('-')[0];
+            try {
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(data.text)}&langpair=${data.lang}|${lang}`);
+                const json = await res.json();
+                const text = json.responseData.translatedText;
+                addMsg(data.user, text);
+                const ut = new SpeechSynthesisUtterance(text);
+                ut.lang = document.getElementById('my-lang').value; window.speechSynthesis.speak(ut);
+            } catch(e) { addMsg(data.user, data.text); }
         });
     }
 
@@ -184,31 +182,18 @@
 
     if(recognition) {
         recognition.onresult = (e) => {
-            const text = e.results[0][0].transcript;
-            const n = (isAdmin ? "👑 " : "") + (document.getElementById('user-name').value || "Moi");
-            addMsg("Moi", text);
-            if(conn && conn.open) conn.send({ text: text, lang: document.getElementById('my-lang').value.split('-')[0], user: n });
+            const t = e.results[0][0].transcript;
+            addMsg("Moi", t);
+            if(conn && conn.open) conn.send({ text: t, lang: document.getElementById('my-lang').value.split('-')[0], user: document.getElementById('user-name').value });
         };
     }
 
-    function addMsg(user, text) {
-        const entry = document.createElement('div');
-        entry.style.padding = "5px 0"; entry.style.borderBottom = "1px solid #1e293b";
-        entry.innerHTML = `<b style="color:var(--accent)">${user}</b>: ${text}`;
-        document.getElementById('history').prepend(entry);
-    }
-
-    async function translate(text, from, to) {
-        if(from === to) return text;
-        try {
-            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
-            const json = await res.json(); return json.responseData.translatedText;
-        } catch { return text; }
-    }
-
-    function speak(text, lang) {
-        const ut = new SpeechSynthesisUtterance(text);
-        ut.lang = lang; window.speechSynthesis.speak(ut);
+    function addMsg(u, t) {
+        const div = document.createElement('div');
+        div.style.padding = "5px 0"; div.style.borderBottom = "1px solid #1e293b";
+        div.innerHTML = `<b style="color:var(--accent)">${u}:</b> ${t}`;
+        const box = document.getElementById('chat-box');
+        box.prepend(div);
     }
 </script>
 </body>
