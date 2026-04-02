@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Radio Convoi Pro V40.41</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --info: #38bdf8; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        #lock-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .container { padding: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; min-height: 100vh; box-sizing: border-box; }
+        .card { background: var(--card); padding: 20px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; z-index: 10; position: relative; }
+        input, select { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
+        .btn-main { background: var(--accent); color: #000; padding: 16px; width: 100%; font-weight: bold; border-radius: 12px; border:none; font-size: 1.1rem; cursor: pointer; }
+        #mini-radio { display: none; position: fixed; bottom: 85px; right: 30px; width: 70px; height: 70px; background: var(--danger); border-radius: 50%; z-index: 1000; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); align-items: center; justify-content: center; font-size: 1.8rem; border: 3px solid white; color: white; cursor: pointer; }
+        #ptt-btn { width: 110px; height: 110px; border-radius: 50%; background: #334155; border: 8px solid #475569; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; cursor: pointer; }
+        #ptt-btn:active, #mini-radio:active { background: #b91c1c; transform: scale(0.92); border-color: #fff; }
+        .archive-section { background: #020617; border-radius: 15px; padding: 12px; height: 200px; overflow-y: auto; text-align: left; font-size: 0.85rem; border: 1px solid #1e293b; }
+        .help-msg { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--info); color: var(--info); padding: 10px; border-radius: 10px; margin-bottom: 10px; font-style: italic; line-height: 1.3; }
+        .status-bar { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--accent); margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 12px; border: 1px solid #334155; }
+        .folder-link { cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div id="lock-screen">
+    <h2 style="color:var(--accent)">🔒 ACCÈS RÉSERVÉ</h2>
+    <input type="password" id="master-code" placeholder="Code d'accès" style="max-width: 250px; text-align: center;">
+    <button class="btn-main" onclick="checkCode()">ENTRER</button>
+</div>
+
+<div id="mini-radio" onmousedown="startMic()" onmouseup="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">🎙️</div>
+
+<div class="container" id="app-content" style="display:none">
+    <div id="setup" class="card">
+        <h3 id="txt-welcome">👋 BIENVENUE</h3>
+        <input type="text" id="user-name" placeholder="VOTRE PRÉNOM">
+        <input type="text" id="convoi-id" placeholder="ID DU CONVOI">
+       
+        <select id="my-lang" onchange="translateInterface()">
+            <option value="sq-AL">🇦🇱 Albanais</option>
+            <option value="de-DE">🇩🇪 Allemand</option>
+            <option value="en-GB">🇬🇧 Anglais</option>
+            <option value="hy-AM">🇦🇲 Arménien</option>
+            <option value="at-AT">🇦🇹 Autrichien</option>
+            <option value="az-AZ">🇦🇿 Azéri</option>
+            <option value="nl-BE">🇧🇪 Belge</option>
+            <option value="be-BY">🇧🇾 Biélorusse</option>
+            <option value="bs-BA">🇧🇦 Bosniaque</option>
+            <option value="bg-BG">🇧🇬 Bulgare</option>
+            <option value="hr-HR">🇭🇷 Croate</option>
+            <option value="da-DK">🇩🇰 Danois</option>
+            <option value="es-ES">🇪🇸 Espagnol</option>
+            <option value="et-EE">🇪🇪 Estonien</option>
+            <option value="fi-FI">🇫🇮 Finnois</option>
+            <option value="fr-FR" selected>🇫🇷 Français</option>
+            <option value="ka-GE">🇬🇪 Géorgien</option>
+            <option value="el-GR">🇬🇷 Grec</option>
+            <option value="nl-NL">🇳🇱 Hollandais</option>
+            <option value="hu-HU">🇭🇺 Hongrois</option>
+            <option value="ga-IE">🇮🇪 Irlandais</option>
+            <option value="is-IS">🇮🇸 Islandais</option>
+            <option value="it-IT">🇮🇹 Italien</option>
+            <option value="kk-KZ">🇰🇿 Kazakh</option>
+            <option value="lv-LV">🇱🇻 Letton</option>
+            <option value="li-LI">🇱🇮 Liechtensteinois</option>
+            <option value="lt-LT">🇱🇹 Lituanien</option>
+            <option value="lb-LU">🇱🇺 Luxembourgeois</option>
+            <option value="mk-MK">🇲🇰 Macédonien</option>
+            <option value="mt-MT">🇲🇹 Maltais</option>
+            <option value="md-MD">🇲🇩 Moldave</option>
+            <option value="mc-MC">🇲🇨 Monégasque</option>
+            <option value="me-ME">🇲🇪 Monténégrin</option>
+            <option value="no-NO">🇳🇴 Norvégien</option>
+            <option value="pl-PL">🇵🇱 Polonais</option>
+            <option value="pt-PT">🇵🇹 Portugais</option>
+            <option value="ro-RO">🇷🇴 Roumain</option>
+            <option value="ru-RU">🇷🇺 Russe</option>
+            <option value="sm-SM">🇸🇲 Saint-Marinais</option>
+            <option value="sr-RS">🇷🇸 Serbe</option>
+            <option value="sk-SK">🇸🇰 Slovaque</option>
+            <option value="sl-SI">🇸🇮 Slovène</option>
+            <option value="sv-SE">🇸🇪 Suédois</option>
+            <option value="ch-FR">🇨🇭 Suisse</option>
+            <option value="cs-CZ">🇨🇿 Tchèque</option>
+            <option value="tr-TR">🇹🇷 Turc</option>
+            <option value="va-VA">🇻🇦 Vaticanais</option>
+        </select>
+       
+        <button class="btn-main" id="btn-join" onclick="joinRadio()">DÉMARRER LA RADIO</button>
+    </div>
+
+    <div id="radio-ui" class="card" style="display:none">
+        <div class="status-bar">
+            <span id="display-name" style="font-weight: bold;"></span>
+            <span id="display-code" class="folder-link" onclick="openFolderInfo()"></span>
+        </div>
+        <div id="ptt-btn" onmousedown="startMic()" onmouseup="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">🎙️</div>
+        <div class="archive-section" id="history">
+            <div class="help-msg" id="txt-help">Appuyez sur le bouton micro : vos paroles seront transcrites et traduites automatiquement dans la langue de la personne qui reçoit.</div>
+        </div>
+        <button id="btn-quit" onclick="location.reload()" style="background:none; color:#64748b; font-size:0.7rem; margin-top:10px; border:none; text-decoration:underline; cursor:pointer;">Quitter</button>
+    </div>
+</div>
+
+<script>
+    const CODE_ADMIN = "2109", CODE_USER = "1234";
+    let isAdmin = false, peer, conn, recognition;
+
+    const TEXT_BASE_FR = {
+        'txt-welcome': "👋 BIENVENUE",
+        'btn-join': "DÉMARRER LA RADIO",
+        'user-name': "VOTRE PRÉNOM",
+        'convoi-id': "ID DU CONVOI",
+        'btn-quit': "Quitter",
+        'txt-help': "Appuyez sur le bouton micro : vos paroles seront transcrites et traduites automatiquement dans la langue de la personne qui reçoit."
+    };
+
+    function openFolderInfo() {
+        const folder = document.getElementById('display-code').innerText;
+        alert("📁 Dossier : " + folder + "\nCliquez sur 'Quitter' pour changer de dossier.");
+    }
+
+    async function translateInterface() {
+        const langCode = document.getElementById('my-lang').value.split('-')[0];
+        const elements = [
+            { id: 'txt-welcome', key: 'txt-welcome' },
+            { id: 'btn-join', key: 'btn-join' },
+            { id: 'user-name', key: 'user-name', prop: 'placeholder' },
+            { id: 'convoi-id', key: 'convoi-id', prop: 'placeholder' },
+            { id: 'btn-quit', key: 'btn-quit' },
+            { id: 'txt-help', key: 'txt-help' }
+        ];
+        for(let item of elements) {
+            const el = document.getElementById(item.id);
+            if(el) {
+                let finalTxt = (langCode === "fr") ? TEXT_BASE_FR[item.key] : await translate(TEXT_BASE_FR[item.key], "fr", langCode);
+                if(item.prop === 'placeholder') el.placeholder = finalTxt; else el.innerText = finalTxt;
+            }
+        }
+    }
+
+    function checkCode() {
+        const val = document.getElementById('master-code').value;
+        if(val === CODE_ADMIN || val === CODE_USER) {
+            isAdmin = (val === CODE_ADMIN);
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('app-content').style.display = 'flex';
+        } else alert("Code incorrect.");
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.continuous = false; }
+
+    function joinRadio() {
+        const name = document.getElementById('user-name').value.trim() || "Chauffeur";
+        const code = document.getElementById('convoi-id').value.toUpperCase().trim();
+        if(!code) return alert("ID requis");
+        peer = new Peer(code + "_" + Math.random().toString(36).substr(2, 4));
+        peer.on('open', () => {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('radio-ui').style.display = 'block';
+            document.getElementById('mini-radio').style.display = 'flex';
+            document.getElementById('display-name').innerText = (isAdmin ? "👑 " : "👤 ") + name;
+            document.getElementById('display-code').innerText = "📂 " + code;
+            setupEvents(peer.connect(code));
+        });
+        peer.on('connection', (c) => setupEvents(c));
+    }
+
+    function setupEvents(c) {
+        conn = c;
+        conn.on('data', async (data) => {
+            const lang = document.getElementById('my-lang').value;
+            const translated = await translate(data.text, data.lang, lang.split('-')[0]);
+            addMsg(data.user, translated);
+            speak(translated, lang);
+        });
+    }
+
+    function startMic() { if(recognition) { try { recognition.lang = document.getElementById('my-lang').value; recognition.start(); } catch(e){} } }
+    function stopMic() { if(recognition) recognition.stop(); }
+
+    if(recognition) {
+        recognition.onresult = (e) => {
+            const text = e.results[0][0].transcript;
+            const n = (isAdmin ? "👑 " : "") + (document.getElementById('user-name').value || "Moi");
+            addMsg("Moi", text);
+            if(conn && conn.open) conn.send({ text: text, lang: document.getElementById('my-lang').value.split('-')[0], user: n });
+        };
+    }
+
+    function addMsg(user, text) {
+        const entry = document.createElement('div');
+        entry.style.padding = "5px 0"; entry.style.borderBottom = "1px solid #1e293b";
+        entry.innerHTML = `<b style="color:var(--accent)">${user}</b>: ${text}`;
+        document.getElementById('history').prepend(entry);
+    }
+
+    async function translate(text, from, to) {
+        if(from === to) return text;
+        try {
+            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+            const json = await res.json(); return json.responseData.translatedText;
+        } catch { return text; }
+    }
+
+    function speak(text, lang) {
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = lang; window.speechSynthesis.speak(ut);
+    }
+</script>
+</body>
+</html>
